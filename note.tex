@@ -1,0 +1,204 @@
+\documentclass[11pt]{article}
+\usepackage[hmargin=1in,vmargin=0.86in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,booktabs}
+\usepackage[hidelinks]{hyperref}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\title{An exhaustive search for small graphic Merino--Welsh counterexamples}
+\author{Claude Make No Mistakes}
+\date{25 November 2026}
+\newcommand{\scope}{31}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We use the reduction to \(2\)-inflated matroids in the graphic class.
+We group parallel core edges
+and compute all candidate expansions of each core in a single
+exact tensor transform. The search proves the multiplicative
+inequality for every loopless bridgeless multigraph with at most
+\scope{} edges.
+\end{abstract}
+
+\section{Reduction to paired expansions}
+Write \(A(G)=T_G(2,0)\), \(C(G)=T_G(0,2)\), and
+\(\tau(G)=T_G(1,1)\). For a connected graph these count acyclic
+orientations, totally cyclic orientations, and spanning trees.
+The multiplicative Merino--Welsh conjecture is
+\(A(G)C(G)\geq\tau(G)^2\) for loopless bridgeless \(G\).
+The matroid analogue is false \cite{beke}; the graph question
+remains open \cite{vali}.
+
+\begin{lemma}
+If the graph inequality fails, a minimum-edge counterexample can be
+constructed from a connected, loopless, bridgeless multigraph \(H\)
+by doubling or subdividing every edge exactly once. In each
+parallel bundle of \(H\), at most one edge is doubled.
+\end{lemma}
+\begin{proof}
+Apply Knauer, Mart{\'\i}nez-Sandoval, and Merino's Lemma 1
+\cite{kmm} to graphic matroids with at most the minimum
+counterexample size. This class is minor-closed. The reduction
+gives a counterexample with its elements partitioned into
+two-element parallel and series classes. It is connected, since
+the three Tutte evaluations multiply over the components and a
+counterexample component would be smaller. The paired core
+construction \cite[\S3]{kmm}, also given by Chen, Jin, and Ma
+\cite{cjm}, yields a connected loopless coloopless graphic
+matroid by keeping one representative from each pair. The original
+matroid is obtained by one parallel or series extension of each
+representative. The corresponding
+graph operations are doubling and subdivision. After removing
+isolated vertices a graph representing the core has one connected
+component and no cut vertex. A cut vertex would partition its
+edges so that no circuit meets two parts. Consequently its simple
+support is biconnected when it has at least three vertices.
+The two-vertex case consists of parallel edges.
+Doubling two edges with identical endpoints would create a
+parallel class of size at least four in the counterexample,
+contrary to the two-element class property.
+\end{proof}
+
+\newpage
+\section{Exact evaluations}
+Let \(m\) and \(n\) be the edge count and order of \(H\). Let \(S\)
+be the edges chosen for subdivision and \(P=E(H)\setminus S\)
+the edges chosen for doubling. For a subset of expanded edges,
+declare a core edge conductive when its doubled pair is nonempty
+or its subdivided pair is full. Let \(D\) denote the conductive set
+and \(k(D)\) its number of components on the original vertex set.
+Components on the expanded vertex set are exactly the components
+of \(D\) plus isolated subdivision vertices from empty pairs.
+The following expressions for the expanded graph \(G\) are the
+graphic specialization of \cite[Proposition 3]{kmm}:
+\begin{align*}
+ A(G) &= \sum_{D\subseteq E(H)}(-1)^{n+k(D)+|D|}\,3^{|S\setminus D|},\\
+ C(G) &= \sum_{D\subseteq E(H)}(-1)^{k(D)-1}\,3^{|P\cap D|},\\
+ \tau(G)&=\sum_{\substack{D\subseteq E(H)\\D\text{ a spanning tree}}}
+                         2^{|S\setminus D|+|P\cap D|}.
+\end{align*}
+At \((2,0)\), the Tutte sign is \((-1)^{|F|-|V(G)|+k_G(F)}\)
+for an expanded edge set \(F\). The two singleton selections and
+the double selection of a conductive parallel pair contribute
+\(-2+1=-1\). A nonconductive series pair contributes \(-3\)
+from its empty and singleton selections, with the empty state
+introducing an isolated vertex. Factoring out one minus sign per
+series pair yields the displayed formula for \(A\).
+At \((0,2)\), the sign is \((-1)^{k_G(F)-1}\). A conductive
+parallel pair has three selections, and a nonconductive series
+pair contributes \(2-1=1\). A spanning tree uses exactly one
+edge of each chosen parallel pair and one edge of each
+nonconductive series pair to attach its interior vertex.
+These weights are specializations of standard multivariate Tutte
+series and parallel identities \cite{sokal}.
+
+\section{Parallel bundles and exhaustive scan}
+Let the simple support have \(\ell\) edges. In a bundle of size \(b\)
+the two eligible decorations are one doubled edge with \(b-1\)
+subdivisions, and \(b\) subdivisions. An interchange of parallel
+core edges preserves the graph's three counts. For each bundle,
+rows below represent these two decorations, and columns represent
+zero or at least one conductive core edge in the bundle:
+\[
+ A_b=\begin{pmatrix}3^{b-1}&-3^{b-1}\\3^b&2^b-3^b\end{pmatrix},\quad
+ C_b=\begin{pmatrix}1&2^{b+1}-1\\1&2^b-1\end{pmatrix},\quad
+ L_b=\begin{pmatrix}2^{b-1}&(b+3)2^b/4\\2^b&b2^{b-1}\end{pmatrix}.
+\]
+For \(A_b\), the second column is the sum over nonempty selections
+of conductive edges, absorbing \((-1)^{|D|}\). For \(C_b\),
+each doubled edge contributes weight three when conductive.
+For \(L_b\), a chosen support edge must have exactly one conductive
+core edge, since two would create a cycle. The tensor factors
+operate on support-subset vectors with entries
+\((-1)^{n+k(D)}\), \((-1)^{k(D)-1}\), and the indicator of a support
+spanning tree, respectively. We apply each factor to every pair
+of entries that differ in its bundle bit. This gives all
+\(2^\ell\) eligible decorations in \(O(\ell 2^\ell)\) time.
+The row sums in absolute value for each factor are at most
+\(4^b\), so all intermediate integer values fit a signed 64-bit
+word for the sizes considered. Products and comparisons are
+exact.
+
+We used nauty 2.9.3 \cite{nauty}. For each order, \texttt{geng -C}
+enumerates every simple biconnected support in the edge range,
+and \texttt{multig} enumerates positive multiplicities up to
+support automorphisms. We handle the two-vertex case directly.
+We reduce supports by repeatedly deleting vertices of degree
+at most two, with a degree-two vertex's neighbors made adjacent.
+This preserves any \(K_4\) minor, since a removed vertex cannot
+be a singleton branch set of such a minor. If the support reduces
+to the empty graph, all its expansions are series--parallel
+and satisfy the inequality \cite{noble}. The exact transform
+covers the remaining cores.
+
+\begin{theorem}
+Every loopless bridgeless multigraph with at most \scope{} edges
+satisfies the multiplicative Merino--Welsh inequality.
+\end{theorem}
+\begin{proof}
+A smallest counterexample with at most \scope{} edges would have
+a core with at most \(15\) edges by the lemma.
+The search covers each of those cores and found no violation.
+\end{proof}
+
+The ledger contains per-order and per-size counts, with
+\(1{,}501{,}597\) cores in total. The series--parallel theorem
+handles \(575{,}527\) cores and the transform checked
+\(7{,}222{,}616{,}960\) decorations of the remaining cores.
+The smallest ratio in the computed part is \(121104/42025\).
+It occurs for the core \(K_4\) with three edges of a spanning
+path subdivided and the other three doubled.
+The independent checker uses deletion--contraction on expanded
+graphs for control instances and verifies archived spanning-tree
+counts by exact Laplacian determinants.
+
+\subsection*{Further bundle pruning}
+The replacement tables of Noble and Royle \cite{noble} also
+exclude a bundle of at least three edges with one doubled edge
+and a fully subdivided bundle of at least four edges from a
+minimum counterexample. For the first case the quotient can be
+compared quantitatively. In a connected remainder \(Q\), let
+\(a_i,c_i,t_i\) be the three evaluations on \(Q\) for \(i=0\)
+and on the terminal contraction for \(i=1\). Adding a mixed bundle
+of \(k\) core edges gives
+\[
+\frac{A_k}{2^{k-1}}=(3/2)^{k-1}(a_0+a_1),\qquad
+\frac{C_k}{2^{k-1}}=4c_1+2^{1-k}(c_0-c_1),\qquad
+\frac{\tau_k}{2^{k-1}}=t_0+\frac{k+3}{2}t_1.
+\]
+Contraction sends directed cycles to directed closed walks, so
+\(c_1\geq c_0\). For \(k\geq2\), the normalized tree count grows
+by a factor at most \(6/5\) when \(k\) increases by one. Therefore
+the quotient \(A_kC_k/\tau_k^2\) grows by a factor at least
+\((3/2)(5/6)^2=25/24\) per added path. The finite search above
+also evaluates the larger bundles.
+
+\begin{thebibliography}{9}
+\setlength{\itemsep}{0.18em}
+\bibitem{beke} C. Beke, G. K. Csáji, P. Csikvári, and S. Pituk.
+The Merino--Welsh conjecture is false for matroids.
+\emph{Adv. Math.} 446 (2024), 109674.
+\href{https://arxiv.org/abs/2311.01932}{arXiv:2311.01932}.
+\bibitem{kmm} K. Knauer, L. Mart{\'\i}nez-Sandoval, and C. Merino.
+Merino--Welsh inequalities for matroids with controlled lattices of
+cyclic flats.
+\href{https://arxiv.org/html/2609.38047v1}{arXiv:2609.38047v1}, 2026.
+\bibitem{cjm} J. Chen, X. Jin, and T. Ma.
+On minimum-size matroid counterexamples to the multiplicative
+Merino--Welsh inequality.
+\href{https://arxiv.org/html/2610.27706v1\#S5}{arXiv:2610.27706v1}, 2026.
+\bibitem{noble} S. D. Noble and G. F. Royle.
+The Merino--Welsh conjecture holds for series--parallel graphs.
+\emph{Eur. J. Combin.} 38 (2014), 24--35.
+\href{https://arxiv.org/abs/1303.6416}{arXiv:1303.6416}.
+\bibitem{sokal} A. D. Sokal. The multivariate Tutte polynomial
+(alias Potts model) for graphs and matroids.
+\href{https://arxiv.org/abs/math/0503607}{arXiv:math/0503607}, 2005.
+\bibitem{nauty} B. D. McKay and A. Piperno.
+Practical graph isomorphism, II.
+\emph{J. Symbolic Comput.} 60 (2014), 94--112.
+\href{https://doi.org/10.1016/j.jsc.2013.09.003}{DOI link}.
+\bibitem{vali} B. Váli. The Merino--Welsh conjecture for sparse
+and dense graphs. \href{https://arxiv.org/abs/2611.15008v1}{arXiv:2611.15008v1}, 2026.
+\end{thebibliography}
+\end{document}
