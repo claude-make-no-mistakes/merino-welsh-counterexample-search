@@ -1,6 +1,6 @@
 # Multiplicative Merino–Welsh for small multigraphs
 
-**Every loopless bridgeless multigraph with at most 31 edges satisfies the multiplicative Merino–Welsh inequality**
+**Every loopless bridgeless multigraph with at most 33 edges satisfies the multiplicative Merino–Welsh inequality**
 
 $$T_G(2,0)T_G(0,2)\ \ge\ T_G(1,1)^2.$$
 
@@ -11,7 +11,8 @@ We applied the reduction to 2-inflated matroids in the graphic class. A smallest
 | [Through 13](through-13.jsonl) | 76,361 | 41,587 | 83,073,664 |
 | 14 | 254,671 | 111,233 | 682,969,664 |
 | 15 | 1,170,565 | 422,707 | 6,456,573,632 |
-| Total | 1,501,597 | 575,527 | 7,222,616,960 |
+| [16](16.jsonl) | 5,580,706 | 1,633,574 | 62,254,341,888 |
+| Total | 7,082,303 | 2,209,101 | 69,476,958,848 |
 
 The computed decorations all passed. Their smallest ratio was $121104/42025$, achieved by subdividing the edges of a spanning path in $K_4$ and doubling the other edges. The ratio describes the computed part. The excluded series–parallel family can attain equality.
 
@@ -20,12 +21,13 @@ The computed decorations all passed. Their smallest ratio was $121104/42025$, ac
 Use Python 3.10 or later, nauty 2.9.3, and a 64-bit G++ or Clang++ compiler with a 128-bit integer type. Use `search.exe`, `geng.exe`, and `multig.exe` on Windows.
 
     g++ -std=c++17 -O3 -Wall -Wextra -Werror search.cpp -o search
-    python verify.py through-13.jsonl 14-to-15.jsonl --search ./search
+    python verify.py through-13.jsonl 14-to-15.jsonl 16.jsonl --search ./search
 
 The verifier uses deletion–contraction on expanded graphs and independent exact spanning-tree counts. Give it `--geng /path/to/geng --multig /path/to/multig` to reproduce the core count in each stratum. To regenerate the search ledgers from scratch, build `geng` and `multig` from nauty. Use new output paths.
 
     python enumerate.py replay-13.jsonl --geng /path/to/geng --multig /path/to/multig --search ./search --through 13
     python enumerate.py replay-14-to-15.jsonl --geng /path/to/geng --multig /path/to/multig --search ./search --from 14 --through 15
+    python enumerate.py replay-16.jsonl --geng /path/to/geng --multig /path/to/multig --search ./search --from 16 --through 16
 
 Nauty generates the simple biconnected supports and then the nonisomorphic positive multiplicity assignments. The separate two-vertex case is handled directly. [Nauty source and documentation](https://pallini.di.uniroma1.it/)
 
